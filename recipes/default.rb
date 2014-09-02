@@ -47,7 +47,7 @@ end
 domain_member = `domainjoin-cli query | egrep -ic 'Domain = #{node['pbis-open']['ad_domain'].upcase}'`.to_i
 
 # Set configuration options if joined
-if (File.exists?('/usr/bin/domainjoin-cli') && domain_member)
+if (File.exists?('/usr/bin/domainjoin-cli') && domain_member == 1)
   execute "reload-config" do
     command "/opt/pbis/bin/config --file #{node['pbis-open']['config_file']}"
     action :nothing
@@ -67,6 +67,14 @@ end
 
 # Disable the Ohai passwd plugin to avoid pulling LDAP information
 # https://tickets.opscode.com/browse/OHAI-165
+directory "/etc/chef/client.d" do
+  owner "root"
+  group "root"
+  mode "0755"
+  recursive true
+  action :create
+end
+
 template "/etc/chef/client.d/disable-passwd.rb" do
   source "disable-passwd.rb.erb"
 end
