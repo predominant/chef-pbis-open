@@ -1,0 +1,7 @@
+<% node['pbis-open']['options'].each do |key, value| -%>
+<% if key == 'RequireMembershipOf' -%>
+<%= key %> "<%= value.join('" "') %>"
+<% else -%>
+<%= key %> <%= value %>
+<% end -%>
+<% end -%>

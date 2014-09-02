@@ -1,0 +1,3 @@
+# Disables the Ohai passwd plugin to avoid enumerating entries in an LDAP server
+# https://tickets.opscode.com/browse/OHAI-165
+Ohai::Config[:disabled_plugins] = [:Passwd]
