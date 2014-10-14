@@ -33,6 +33,18 @@ Note: PBIS Open installation requires a restart, which this cookbook does not ha
 }
 ```
 
+### pbis-open::hold_samba
+
+When using PBIS & Samba, Samba package upgrades will break the PBIS plugin. Deploying this recipe to your Debian-based system will keep the Samba packages from automatically updating.
+
+When security updates are released, perform the following on your node to manually upgrade Samba and re-install the PBIS plugin:
+```
+sudo apt-get -y install samba
+sudo /opt/pbis/bin/samba-interop-install --install
+sudo service smbd restart
+```
+
+
 ## License and Authors
 
 Author:: Biola University (<jared.king@biola.edu>)
