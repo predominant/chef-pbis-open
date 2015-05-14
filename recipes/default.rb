@@ -47,7 +47,7 @@ end
 domain_member = `domainjoin-cli query | egrep -ic 'Domain = #{node['pbis-open']['ad_domain'].upcase}'`.to_i
 
 # Set configuration options if joined
-if (File.exists?('/usr/bin/domainjoin-cli') && domain_member == 1)
+if File.exist?('/usr/bin/domainjoin-cli') && domain_member == 1
   execute 'reload-config' do
     command "/opt/pbis/bin/config --file #{node['pbis-open']['config_file']}"
     action :nothing
@@ -58,7 +58,7 @@ if (File.exists?('/usr/bin/domainjoin-cli') && domain_member == 1)
     notifies :run, resources(:execute => 'reload-config')
   end
 # Join the computer to the domain if needed
-elsif (bind_credentials)
+elsif bind_credentials
   execute 'join-domain' do
     command "domainjoin-cli join #{node['pbis-open']['ad_domain'].upcase} #{bind_credentials['username']} '#{bind_credentials['password']}'"
     action :run
