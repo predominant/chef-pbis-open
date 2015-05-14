@@ -51,8 +51,8 @@ sudo service smbd restart
 
 ## License and Authors
 
-Author:: Biola University (<jared.king@biola.edu>)
-Author:: Graham Weldon (<graham.weldon@rakuten.com>)
+* Author:: Biola University (<jared.king@biola.edu>)
+* Author:: Graham Weldon (<graham.weldon@rakuten.com>)
 
 ```text
 Copyright 2015, Biola University
