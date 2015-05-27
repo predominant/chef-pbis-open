@@ -4,13 +4,17 @@ This cookbook installs and configures PowerBroker Identity Services Open Edition
 
 ## Supported Platforms
 
-Tested on Ubuntu 12.04. Requires a chef-vault item with "username" and "password" keys to be created if the server will join the AD domain automatically. The credentials in the chef-vault item must have permission to join a computer in the domain, or a computer account must be pre-staged appropriately.
+Tested on Ubuntu 12.04. Requires a chef-vault item with `username` and `password` keys to be created if the server will join the AD domain automatically.
+
+The credentials in the chef-vault item must have permission to join a computer in the domain, or a computer account must be pre-staged appropriately.
 
 ## Usage
 
 ### pbis-open::default
 
-Installs and configures PBIS Open. Joins the system to the AD domain if configured to do so (see requirements above). Single-line registry entries can be created under `node['pbis-open']['options']` and will be loaded on the next chef-client run. Multi-line entries other than "RequireMembershipOf" are not currently handled by this cookbook.
+Installs and configures PBIS Open. Joins the system to the AD domain if configured to do so (see requirements above).
+
+Single-line registry entries can be created under `node['pbis-open']['options']` and will be loaded on the next chef-client run. Multi-line entries other than `RequireMembershipOf` are not currently handled by this cookbook.
 
 Note: PBIS Open installation requires a restart, which this cookbook does not handle.
 
@@ -38,19 +42,20 @@ Note: PBIS Open installation requires a restart, which this cookbook does not ha
 When using PBIS & Samba, Samba package upgrades will break the PBIS plugin. Deploying this recipe to your Debian-based system will keep the Samba packages from automatically updating.
 
 When security updates are released, perform the following on your node to manually upgrade Samba and re-install the PBIS plugin:
-```
+
+```text
 sudo apt-get -y install samba
 sudo /opt/pbis/bin/samba-interop-install --install
 sudo service smbd restart
 ```
 
-
 ## License and Authors
 
-Author:: Biola University (<jared.king@biola.edu>)
+* Author:: Biola University (<jared.king@biola.edu>)
+* Author:: Graham Weldon (<graham.weldon@rakuten.com>)
 
 ```text
-Copyright 2014, Biola University
+Copyright 2015, Biola University
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

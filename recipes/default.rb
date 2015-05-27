@@ -2,7 +2,7 @@
 # Cookbook Name:: pbis-open
 # Recipe:: default
 #
-# Copyright 2014, Biola University
+# Copyright 2015, Biola University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ remote_file "#{Chef::Config['file_cache_path']}/pbis-open.deb.sh" do
   source node['pbis-open']['installation_script_url']
   owner 'root'
   group 'root'
-  mode "0744"
+  mode '0744'
   action :create_if_missing
 end
 
@@ -38,28 +38,28 @@ end
 
 # Get AD authentication info using chef-vault
 begin
-	bind_credentials = chef_vault_item(node['pbis-open']['chef_vault'], node['pbis-open']['chef_vault_item'])
+  bind_credentials = chef_vault_item(node['pbis-open']['chef_vault'], node['pbis-open']['chef_vault_item'])
 rescue
-	log 'Unable to load chef vault item. Skipping domain join.'
+  log 'Unable to load chef vault item. Skipping domain join.'
 end
 
 # Determine if the computer is joined to the domain
 domain_member = `domainjoin-cli query | egrep -ic 'Domain = #{node['pbis-open']['ad_domain'].upcase}'`.to_i
 
 # Set configuration options if joined
-if (File.exists?('/usr/bin/domainjoin-cli') && domain_member == 1)
-  execute "reload-config" do
+if File.exist?('/usr/bin/domainjoin-cli') && domain_member == 1
+  execute 'reload-config' do
     command "/opt/pbis/bin/config --file #{node['pbis-open']['config_file']}"
     action :nothing
   end
 
   template node['pbis-open']['config_file'] do
-    source "pbis.conf.erb"
-    notifies :run, resources(:execute => "reload-config")
+    source 'pbis.conf.erb'
+    notifies :run, resources(:execute => 'reload-config')
   end
 # Join the computer to the domain if needed
-elsif (bind_credentials)
-  execute "join-domain" do
+elsif bind_credentials
+  execute 'join-domain' do
     command "domainjoin-cli join #{node['pbis-open']['ad_domain'].upcase} #{bind_credentials['username']} '#{bind_credentials['password']}'"
     action :run
   end
@@ -67,14 +67,14 @@ end
 
 # Disable the Ohai passwd plugin to avoid pulling LDAP information
 # https://tickets.opscode.com/browse/OHAI-165
-directory "/etc/chef/client.d" do
-  owner "root"
-  group "root"
-  mode "0755"
+directory '/etc/chef/client.d' do
+  owner 'root'
+  group 'root'
+  mode '0755'
   recursive true
   action :create
 end
 
-template "/etc/chef/client.d/disable-passwd.rb" do
-  source "disable-passwd.rb.erb"
+template '/etc/chef/client.d/disable-passwd.rb' do
+  source 'disable-passwd.rb.erb'
 end

@@ -5,9 +5,8 @@ set :backend, :exec
 
 set :path, '/sbin:/usr/sbin:$PATH'
 
-
-describe "pbis-open" do
-  it "has a running service of lwsmd" do
-    expect(service("lwsmd")).to be_running
+describe 'pbis-open' do
+  it 'has a running service of lwsmd' do
+    expect(service('lwsmd')).to be_running
   end
 end
