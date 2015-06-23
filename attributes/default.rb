@@ -19,7 +19,11 @@
 
 default['pbis-open']['installation_script_url'] = 'http://download.beyondtrust.com/PBISO/8.2.2/linux.deb.x64/pbis-open-8.2.2.2993.linux.x86_64.deb.sh'
 default['pbis-open']['config_file'] = '/etc/pbis/pbis.conf'
+default['pbis-open']['use_vault'] = true
 default['pbis-open']['chef_vault'] = 'ad_credentials'
 default['pbis-open']['chef_vault_item'] = 'pbis_bind'
+default['pbis-open']['data_bag_secret'] = '/etc/chef/pbis_binding_secret'
+default['pbis-open']['data_bag'] = 'pbis'
+default['pbis-open']['data_bagitem'] = 'credentials'
 default['pbis-open']['ad_domain'] = 'corp.contoso.com'
 default['pbis-open']['options']['LoginShellTemplate'] = '/bin/bash'

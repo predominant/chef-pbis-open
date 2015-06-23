@@ -36,11 +36,19 @@ bash 'install-pbis-open' do
   creates '/opt/pbis/bin/config'
 end
 
-# Get AD authentication info using chef-vault
+# Get AD authentication info using chef-vault or provided encrypted databag
 begin
-  bind_credentials = chef_vault_item(node['pbis-open']['chef_vault'], node['pbis-open']['chef_vault_item'])
+  if node['pbis-open']['use_vault']
+    log 'Using Chef-Vault for AD credentials'
+    bind_credentials = chef_vault_item(node['pbis-open']['chef_vault'], node['pbis-open']['chef_vault_item'])
+  else
+    log 'Using Encrypted data bag for AD credentials'
+    secret = Chef::EncryptedDataBagItem.load_secret()
+    bind_credentials = Chef::EncryptedDataBagItem.load(node['pbis-open']['data_bag'], node['pbis-open']['data_bagitem'], secret)
+  end
+
 rescue
-  log 'Unable to load chef vault item. Skipping domain join.'
+  log 'Unable to load AD credendtials. Skipping domain join.'
 end
 
 # Determine if the computer is joined to the domain
