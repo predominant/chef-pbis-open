@@ -48,7 +48,7 @@ begin
   end
 
 rescue
-  log 'Unable to load AD credendtials. Skipping domain join.'
+  log 'Unable to load AD credentials. Skipping domain join.'
 end
 
 # Determine if the computer is joined to the domain
@@ -68,6 +68,7 @@ if File.exist?('/usr/bin/domainjoin-cli') && domain_member == 1
 # Join the computer to the domain if needed
 elsif bind_credentials
   execute 'join-domain' do
+    sensitive true
     command "domainjoin-cli join #{node['pbis-open']['ad_domain'].upcase} #{bind_credentials['username']} '#{bind_credentials['password']}'"
     action :run
   end
