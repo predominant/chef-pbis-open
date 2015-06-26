@@ -18,5 +18,6 @@ suites:
     attributes:
       pbis-open:
          #use_vault: false
-         #ad_domain: "ops.rakuten.com"
+         ad_domain: "corp.contoso.com"
+         perform_reboot: false
 
