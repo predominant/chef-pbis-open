@@ -47,6 +47,7 @@ a.out
 ###########
 .watchr
 .rspec
+.kitchen
 spec/*
 spec/fixtures/*
 test/*

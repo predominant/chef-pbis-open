@@ -36,11 +36,19 @@ bash 'install-pbis-open' do
   creates '/opt/pbis/bin/config'
 end
 
-# Get AD authentication info using chef-vault
+# Get AD authentication info using chef-vault or provided encrypted databag
 begin
-  bind_credentials = chef_vault_item(node['pbis-open']['chef_vault'], node['pbis-open']['chef_vault_item'])
+  if node['pbis-open']['use_vault']
+    log 'Using Chef-Vault for AD credentials'
+    bind_credentials = chef_vault_item(node['pbis-open']['chef_vault'], node['pbis-open']['chef_vault_item'])
+  else
+    log 'Using Encrypted data bag for AD credentials'
+    secret = Chef::EncryptedDataBagItem.load_secret
+    bind_credentials = Chef::EncryptedDataBagItem.load(node['pbis-open']['data_bag'], node['pbis-open']['data_bagitem'], secret)
+  end
+
 rescue
-  log 'Unable to load chef vault item. Skipping domain join.'
+  log 'Unable to load AD credentials. Skipping domain join.'
 end
 
 # Determine if the computer is joined to the domain
@@ -59,10 +67,23 @@ if File.exist?('/usr/bin/domainjoin-cli') && domain_member == 1
   end
 # Join the computer to the domain if needed
 elsif bind_credentials
+  
+
+  reboot 'now' do
+    action :nothing
+    reason 'Reboot for pbis installation.'
+    delay_mins 1
+    only_if { node['pbis-open']['perform_reboot'] }
+  end
+  
   execute 'join-domain' do
+    sensitive true
     command "domainjoin-cli join #{node['pbis-open']['ad_domain'].upcase} #{bind_credentials['username']} '#{bind_credentials['password']}'"
     action :run
+    notifies :reboot_now, 'reboot[now]', :immediately
   end
+
+
 end
 
 # Disable the Ohai passwd plugin to avoid pulling LDAP information
