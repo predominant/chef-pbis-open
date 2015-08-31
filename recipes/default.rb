@@ -46,16 +46,16 @@ begin
     secret = Chef::EncryptedDataBagItem.load_secret
     bind_credentials = Chef::EncryptedDataBagItem.load(node['pbis-open']['data_bag'], node['pbis-open']['data_bagitem'], secret)
   end
-
 rescue
   log 'Unable to load AD credentials. Skipping domain join.'
 end
 
 # Determine if the computer is joined to the domain
-domain_member = `domainjoin-cli query | egrep -ic 'Domain = #{node['pbis-open']['ad_domain'].upcase}'`.to_i
+query = shell_out "domainjoin-cli query | grep -ic 'Domain = #{node['pbis-open']['ad_domain'].upcase}'"
+domain_member = query.status.success? && query.stdout.to_i == 1
 
 # Set configuration options if joined
-if File.exist?('/usr/bin/domainjoin-cli') && domain_member == 1
+if File.exist?('/usr/bin/domainjoin-cli') && domain_member
   execute 'reload-config' do
     command "/opt/pbis/bin/config --file #{node['pbis-open']['config_file']}"
     action :nothing
@@ -67,23 +67,19 @@ if File.exist?('/usr/bin/domainjoin-cli') && domain_member == 1
   end
 # Join the computer to the domain if needed
 elsif bind_credentials
-  
-
   reboot 'now' do
     action :nothing
     reason 'Reboot for pbis installation.'
     delay_mins 1
     only_if { node['pbis-open']['perform_reboot'] }
   end
-  
+
   execute 'join-domain' do
     sensitive true
     command "domainjoin-cli join #{node['pbis-open']['ad_domain'].upcase} #{bind_credentials['username']} '#{bind_credentials['password']}'"
     action :run
     notifies :reboot_now, 'reboot[now]', :immediately
   end
-
-
 end
 
 # Disable the Ohai passwd plugin to avoid pulling LDAP information
