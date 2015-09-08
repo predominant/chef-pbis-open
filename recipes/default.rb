@@ -74,9 +74,18 @@ elsif bind_credentials
     only_if { node['pbis-open']['perform_reboot'] }
   end
 
+  join_cmd =
+    ['domainjoin-cli join'].tap do |o|
+      o << '--notimesync' if node['pbis-open']['join']['time_sync']
+      o << '--disable hostname' if node['pbis-open']['join']['hostname']
+      o << node['pbis-open']['ad_domain'].upcase
+      o << format("'%s'", bind_credentials['username'])
+      o << format("'%s'", bind_credentials['password'])
+    end.join(' ')
+
   execute 'join-domain' do
     sensitive true
-    command "domainjoin-cli join #{node['pbis-open']['ad_domain'].upcase} #{bind_credentials['username']} '#{bind_credentials['password']}'"
+    command join_cmd
     action :run
     notifies :reboot_now, 'reboot[now]', :immediately
   end

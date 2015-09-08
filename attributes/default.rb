@@ -27,3 +27,9 @@ default['pbis-open']['data_bagitem'] = 'credentials'
 default['pbis-open']['ad_domain'] = 'corp.contoso.com'
 default['pbis-open']['options']['LoginShellTemplate'] = '/bin/bash'
 default['pbis-open']['perform_reboot'] = false
+
+# Do not synchronize time with the AD server on domain join.
+default['pbis-open']['join']['time_sync'] = false
+
+# Do not set the underlying node host name on domain join.
+default['pbis-open']['join']['hostname'] = false
