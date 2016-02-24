@@ -1,0 +1,11 @@
+name 'contoso_ad'
+maintainer 'The Authors'
+maintainer_email 'you@example.com'
+license 'all_rights'
+description 'Installs/Configures contoso_ad'
+long_description 'Installs/Configures contoso_ad'
+version '0.1.0'
+
+depends 'windows_ad', '= 0.4.4'
+depends 'resolver', '~> 1.3.0'
+depends 'hurry-up-and-test'
