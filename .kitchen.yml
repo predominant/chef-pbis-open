@@ -1,23 +1,71 @@
 ---
 driver:
   name: vagrant
+  network:
+    - ["private_network", { type: "dhcp" }]
 
 provisioner:
-  name: chef_zero
+  name: nodes
 
 platforms:
   - name: ubuntu-12.04
+    driver_config:
+      network:
+            - ["private_network", {type: "dhcp"}]
+      customize:
+        usb: 'off'
   - name: ubuntu-14.04
+    driver_config:
+      network:
+            - ["private_network", {type: "dhcp"}]
+      customize:
+        usb: 'off'
+  - name: centos-6.5
+    driver_config:
+      network:
+            - ["private_network", {type: "dhcp"}]
+      customize:
+        usb: 'off'
+  - name: centos-7.2
+    driver_config:
+      network:
+            - ["private_network", {type: "dhcp"}]
+      customize:
+        usb: 'off'
+  - name: windows-2012r2
+    driver_config:
+            #box: mwrock/Windows2012R2
+      box: opentable/win-2012r2-standard-amd64-nocm
+      vm_hostname: w2012R1
+      communicator: winrm
+      gui: true
+      network:
+            - ["private_network", {type: "dhcp"}]
+      customize:
+        usb: 'off'
+    transport:
+      name: winrm
 
 suites:
+  - name: test_ad
+    run_list:
+      - recipe[hurry-up-and-test::set_non_nat_vbox_ip]
+      - recipe[contoso_ad::default]
+    includes:
+      windows-2012r2
+    attributes:
+      domain_controller: true
   - name: default
     #data_bags_path: "test/integration/default/data_bags"
     #encrypted_data_bag_secret_key_path: "test/integration/default/enc_db_secret"
     run_list:
+      - recipe[contoso_ad::linux_dns_helper] #this adds the domain controller to resolv.conf so it can join the domain
       - recipe[pbis-open::default]
     attributes:
       pbis-open:
          #use_vault: false
-         ad_domain: "corp.contoso.com"
+         ad_domain: "contoso.local"
          perform_reboot: false
+    excludes:
+      windows-2012r2
 

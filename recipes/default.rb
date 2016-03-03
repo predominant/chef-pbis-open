@@ -20,7 +20,9 @@
 include_recipe 'chef-vault'
 
 # Install PBIS Open
-remote_file "#{Chef::Config['file_cache_path']}/pbis-open.deb.sh" do
+install_script_name = ::File.basename(node['pbis-open']['installation_script_url'])
+
+remote_file "#{Chef::Config['file_cache_path']}/#{install_script_name}" do
   source node['pbis-open']['installation_script_url']
   owner 'root'
   group 'root'
@@ -31,7 +33,7 @@ end
 bash 'install-pbis-open' do
   cwd Chef::Config[:file_cache_path]
   code <<-EOH
-    ./pbis-open.deb.sh install
+    ./#{install_script_name} install
   EOH
   creates '/opt/pbis/bin/config'
 end
@@ -54,19 +56,22 @@ end
 query = shell_out "domainjoin-cli query | grep -ic 'Domain = #{node['pbis-open']['ad_domain'].upcase}'"
 domain_member = query.status.success? && query.stdout.to_i == 1
 
-# Set configuration options if joined
-if File.exist?('/usr/bin/domainjoin-cli') && domain_member
-  execute 'reload-config' do
-    command "/opt/pbis/bin/config --file #{node['pbis-open']['config_file']}"
-    action :nothing
-  end
+# Disable the Ohai passwd plugin to avoid pulling LDAP information
+# https://tickets.opscode.com/browse/OHAI-165
+directory '/etc/chef/client.d' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+  recursive true
+  action :create
+end
 
-  template node['pbis-open']['config_file'] do
-    source 'pbis.conf.erb'
-    notifies :run, resources(:execute => 'reload-config')
-  end
+template '/etc/chef/client.d/disable-passwd.rb' do
+  source 'disable-passwd.rb.erb'
+end
+
 # Join the computer to the domain if needed
-elsif bind_credentials
+if bind_credentials
   reboot 'now' do
     action :nothing
     reason 'Reboot for pbis installation.'
@@ -91,16 +96,14 @@ elsif bind_credentials
   end
 end
 
-# Disable the Ohai passwd plugin to avoid pulling LDAP information
-# https://tickets.opscode.com/browse/OHAI-165
-directory '/etc/chef/client.d' do
-  owner 'root'
-  group 'root'
-  mode '0755'
-  recursive true
-  action :create
+# Set configuration options if joined
+execute 'reload-config' do
+  command "/opt/pbis/bin/config --file #{node['pbis-open']['config_file']}"
+  action :nothing
+  only_if File.exist?('/usr/bin/domainjoin-cli') && domain_member
 end
 
-template '/etc/chef/client.d/disable-passwd.rb' do
-  source 'disable-passwd.rb.erb'
+template node['pbis-open']['config_file'] do
+  source 'pbis.conf.erb'
+  notifies :run, 'execute[reload-config]'
 end

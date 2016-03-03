@@ -15,9 +15,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-default['pbis-open']['installation_script_url'] = 'http://download.beyondtrust.com/PBISO/8.2.2/linux.deb.x64/pbis-open-8.2.2.2993.linux.x86_64.deb.sh'
+# note - would like to generate the url based on the version numbers, but the download url format is not entirely consistent....
+case node['platform_family']
+when 'debian'
+  if node['kernel']['machine'] =~ /x86_64/
+    default['pbis-open']['installation_script_url'] = 'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86_64.deb.sh'
+  else
+    default['pbis-open']['installation_script_url'] = 'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86.deb.sh'
+  end
+when 'rhel'
+  if node['kernel']['machine'] =~ /x86_64/
+    default['pbis-open']['installation_script_url'] = 'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86_64.rpm.sh'
+  else
+    default['pbis-open']['installation_script_url'] = 'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86.rpm.sh'
+  end
+end
+
 default['pbis-open']['config_file'] = '/etc/pbis/pbis.conf'
 default['pbis-open']['use_vault'] = true
 default['pbis-open']['chef_vault'] = 'ad_credentials'

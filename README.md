@@ -4,7 +4,7 @@ This cookbook installs and configures PowerBroker Identity Services Open Edition
 
 ## Supported Platforms
 
-Tested on Ubuntu 12.04. Requires a chef-vault item with `username` and `password` keys to be created if the server will join the AD domain automatically.
+Tested on Ubuntu 12.04, Ubuntu 14.04, Centos 6.5, and Centos 7.2. Requires a chef-vault item with `username` and `password` keys to be created if the server will join the AD domain automatically.
 
 The credentials in the chef-vault item must have permission to join a computer in the domain, or a computer account must be pre-staged appropriately.
 
@@ -48,6 +48,9 @@ sudo apt-get -y install samba
 sudo /opt/pbis/bin/samba-interop-install --install
 sudo service smbd restart
 ```
+
+## Note for cookbook developers
+To facilitate testing, this cookbook uses the nodes provisioner and a fixture cookbook that creates a domain controller for the CONTOSO domain (contoso.local).  You will need to install the kitchen-nodes gem to converge and test in test-kitchen.  see https://github.com/mwrock/kitchen-nodes for details
 
 ## License and Authors
 

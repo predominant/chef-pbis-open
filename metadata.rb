@@ -6,6 +6,6 @@ description      'Installs and configures PowerBroker Identity Services Open Edi
 long_description 'Installs and configures PowerBroker Identity Services Open Edition'
 source_url       'https://github.com/biola/chef-pbis-open'
 issues_url       'https://github.com/biola/chef-pbis-open/issues'
-version          '1.1.1'
+version          '2.0.0'
 
 depends          'chef-vault', '~> 1.1'
