@@ -27,3 +27,15 @@ windows_ad_domain domain do
   end
   action :create
 end
+
+# windows_ad_ou "Departments" do
+#   action :create
+#   domain_name "contoso.local"
+# end
+#
+# # Create Organizational Unit "IT" in the "Department" OUroot
+# windows_ad_ou "IT" do
+#   action :create
+#   domain_name "contoso.local"
+#   ou "Departments"
+# end

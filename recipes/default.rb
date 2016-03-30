@@ -81,6 +81,7 @@ if bind_credentials
 
   join_cmd =
     ['domainjoin-cli join'].tap do |o|
+      o << "--ou '#{node['pbis-open']['join']['ou']}'" if node['pbis-open']['join']['ou']
       o << '--notimesync' if node['pbis-open']['join']['time_sync']
       o << '--disable hostname' if node['pbis-open']['join']['hostname']
       o << node['pbis-open']['ad_domain'].upcase
@@ -93,6 +94,7 @@ if bind_credentials
     command join_cmd
     action :run
     notifies :reboot_now, 'reboot[now]', :immediately
+    not_if { domain_member }
   end
 end
 

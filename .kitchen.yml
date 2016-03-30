@@ -66,6 +66,7 @@ suites:
          #use_vault: false
          ad_domain: "contoso.local"
          perform_reboot: false
+         # join:
+         #  ou: "OU=IT,OU=Departments,DC=contoso,DC=local"
     excludes:
       windows-2012r2
-

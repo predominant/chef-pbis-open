@@ -9,7 +9,7 @@ HashSyntax:
   Enabled: false
 Documentation:
   Enabled: false
-SingleSpaceBeforeFirstArg:
+SpaceBeforeFirstArg:
   Enabled: false
 NumericLiterals:
   Enabled: false
