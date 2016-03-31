@@ -19,17 +19,19 @@
 # note - would like to generate the url based on the version numbers, but the download url format is not entirely consistent....
 case node['platform_family']
 when 'debian'
-  if node['kernel']['machine'] =~ /x86_64/
-    default['pbis-open']['installation_script_url'] = 'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86_64.deb.sh'
-  else
-    default['pbis-open']['installation_script_url'] = 'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86.deb.sh'
-  end
+  default['pbis-open']['installation_script_url'] =
+    if node['kernel']['machine'] =~ /x86_64/
+      'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86_64.deb.sh'
+    else
+      'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86.deb.sh'
+    end
 when 'rhel'
-  if node['kernel']['machine'] =~ /x86_64/
-    default['pbis-open']['installation_script_url'] = 'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86_64.rpm.sh'
-  else
-    default['pbis-open']['installation_script_url'] = 'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86.rpm.sh'
-  end
+  default['pbis-open']['installation_script_url'] =
+    if node['kernel']['machine'] =~ /x86_64/
+      'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86_64.rpm.sh'
+    else
+      'http://download.beyondtrust.com/PBISO/8.3/pbis-open-8.3.0.3287.linux.x86.rpm.sh'
+    end
 end
 
 default['pbis-open']['config_file'] = '/etc/pbis/pbis.conf'
@@ -47,3 +49,6 @@ default['pbis-open']['join']['time_sync'] = false
 
 # Do not set the underlying node host name on domain join.
 default['pbis-open']['join']['hostname'] = false
+
+# override to join a specific ou.  Default is not-specified ( wich is the default Computers container)
+default['pbis-open']['join']['ou'] = nil
